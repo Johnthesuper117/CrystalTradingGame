@@ -1,18 +1,26 @@
 import socket
-import sys
 
-HOST, PORT = "localhost", 9999
-data = " ".join(sys.argv[1:])
+def start_client():
+    # Create a socket object
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    
+    # Get local machine name (localhost)
+    host = '127.0.0.1'
+    port = 12345
+    
+    # Connect to the server
+    client_socket.connect((host, port))
+    
+    # Send data to the server
+    message = "Hello, Server!"
+    client_socket.send(message.encode('utf-8'))
+    
+    # Receive response from the server
+    response = client_socket.recv(1024).decode('utf-8')
+    print("Received response from server: {}".format(response))
+    
+    # Close the connection
+    client_socket.close()
 
-# Create a socket (SOCK_STREAM means a TCP socket)
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-    # Connect to server and send data
-    sock.connect((HOST, PORT))
-    sock.sendall(bytes(data + "\n", "utf-8"))
-
-    # Receive data from the server and shut down
-    received = str(sock.recv(1024), "utf-8")
-
-print("Sent:     {}".format(data))
-print("Received: {}".format(received))
-
+if __name__ == "__main__":
+    start_client()
