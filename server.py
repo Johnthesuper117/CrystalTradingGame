@@ -1,28 +1,36 @@
-import socketserver
+import socket
 
-class MyTCPHandler(socketserver.BaseRequestHandler):
-    """
-    The request handler class for our server.
-
-    It is instantiated once per connection to the server, and must
-    override the handle() method to implement communication to the
-    client.
-    """
-
-    def handle(self):
-        # self.request is the TCP socket connected to the client
-        self.data = self.request.recv(1024).strip()
-        print("Received from {}:".format(self.client_address[0]))
-        print(self.data)
-        # just send back the same data, but upper-cased
-        self.request.sendall(self.data.upper())
+def start_server():
+    # Create a socket object
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    
+    # Get local machine name (localhost)
+    host = '127.0.0.1'
+    port = 12345
+    
+    # Bind the socket to the address and port
+    server_socket.bind((host, port))
+    
+    # Start listening for incoming connections (max 5)
+    server_socket.listen(5)
+    
+    print("Server is listening on {}:{}".format(host, port))
+    
+    while True:
+        # Establish a connection with a client
+        client_socket, addr = server_socket.accept()
+        print("Got a connection from {}".format(addr))
+        
+        # Receive data from the client (1024 bytes max)
+        data = client_socket.recv(1024).decode('utf-8')
+        print("Received data: {}".format(data))
+        
+        # Send a response back to the client
+        response = "Thank you for connecting"
+        client_socket.send(response.encode('utf-8'))
+        
+        # Close the connection with the client
+        client_socket.close()
 
 if __name__ == "__main__":
-    HOST, PORT = "localhost", 9999
-
-    # Create the server, binding to localhost on port 9999
-    with socketserver.TCPServer((HOST, PORT), MyTCPHandler) as server:
-        # Activate the server; this will keep running until you
-        # interrupt the program with Ctrl-C
-        server.serve_forever()
-
+    start_server()
