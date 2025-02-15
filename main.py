@@ -1,9 +1,8 @@
 import time
 from random import randint
+from newline import newline
 # import rng module
 # import [socket] when making servers
-def newline():
-    print("")
 def rng():
     global rnglist
     rnglist = []
